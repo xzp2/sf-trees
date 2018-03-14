@@ -2,7 +2,8 @@
 <head>
 	<meta charset="utf-8"/>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script src="https://d3js.org/d3.v3.min.js"></script>
+	<script src="https://d3js.org/topojson.v2.min.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 <style>
 </style>
@@ -10,20 +11,46 @@
 
 <body>
 <script>
+   
+	// Set up size
+	var width = 750;
+	var height = 800;
+
+	// Set up projection that map is using
+	var projection = d3.geo.mercator();
+
+	var svg = d3.select("body").append("svg")
+		.attr("width", width)
+		.attr("height", height);
+
+	// Add svg map at correct size, assumes map is saved in a subdirectory called "data"
+	svg.append("image")
+	          .attr("width", width)
+	          .attr("height", height)
+	          .attr("xlink:href", "sf-map.svg");
 
 	var species = [];
 
 	d3.csv("/Street_Tree_List.csv", function(error, data) {
 		data.map(function(d) {
 			var tree = [];
-			tree["species"] = d.qSpecies;
-			tree["date"] = d.PlantDate;
-			species.push(tree);
+			if(d.Latitude != "" && d.Longitude != "") {
+				tree["latitude"] = d.Latitude;
+				tree["longitude"] = d.Longitude;
+				species.push(tree);
+			}
 		});
-		for(i=0; i<species.length; i++) {
-			document.write(species[i]+"<br>");
-		}
+		console.log(species[0].latitude);
+		svg.append("circle")
+			.data([species[0].latitude,species[0].longitude]).enter()
+			.attr("cx", function (d) { console.log(projection(d)); return projection(d)[0]; })
+			.attr("cy", function (d) { return projection(d)[1]; })
+			.attr("r", "5px")
+			.attr("fill", "red")
 	});
+
+
+
 
 </script>
 </body>
