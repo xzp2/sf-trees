@@ -3,7 +3,6 @@
 	<meta charset="utf-8"/>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 	<script src="http://d3js.org/d3.v3.min.js"></script>
-	<script src="http://d3js.org/topojson.v1.min.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 <style>
 </style>
@@ -13,15 +12,17 @@
 <script>
 
 	var species = [];
-	var lats = [];
-	var longs = [];
 
 	d3.csv("/Street_Tree_List.csv", function(error, data) {
 		data.map(function(d) {
-			species.push(d.qSpecies);
-			
+			var tree = [];
+			tree["species"] = d.qSpecies;
+			tree["date"] = d.PlantDate;
+			species.push(tree);
 		});
-		document.write(species.length); // must be in outer loop
+		for(i=0; i<species.length; i++) {
+			document.write(species[i]+"<br>");
+		}
 	});
 
 </script>
