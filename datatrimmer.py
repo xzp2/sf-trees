@@ -59,7 +59,7 @@ speciesCount = {}
 speciesListFile = open('SpeciesList.csv', 'w')
 treesTrimmedFile = open('TreesTrimmed.csv', 'w')
 
-speciesListFile.write("qSpecies,qColor\n")
+speciesListFile.write("Species,Color\n")
 
 for key in topTrees:
 	speciesListFile.write(key +',' + topTrees[key] + '\n')
