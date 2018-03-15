@@ -1,0 +1,59 @@
+45 most common tree species in SF
+
+11427	Platanus x hispanica :: Sycamore: London Plane
+8689	Metrosideros excelsa :: New Zealand Xmas Tree
+8358	Lophostemon confertus :: Brisbane Box
+6974	Pittosporum undulatum :: Victorian Box
+6853	Tristaniopsis laurina :: Swamp Myrtle
+6718	Prunus cerasifera :: Cherry Plum
+6230	Magnolia grandiflora :: Southern Magnolia
+5679	Ficus microcarpa nitida 'Green Gem' :: Indian Laurel Fig Tree 'Green Gem'
+5598	Arbutus 'Marina' :: Hybrid Strawberry Tree
+4041	Prunus serrulata 'Kwanzan' :: Kwanzan Flowering Cherry
+3956	Acacia melanoxylon :: Blackwood Acacia
+3887	Maytenus boaria :: Mayten
+3655	Olea europaea :: Olive Tree
+3545	Corymbia ficifolia :: Red Flowering Gum
+3263	Callistemon citrinus :: Lemon Bottlebrush
+3140	Ginkgo biloba :: Maidenhair Tree
+2979	Pyrus calleryana :: Ornamental Pear
+2669	Prunus serrulata :: Ornamental Cherry
+2326	Ulmus parvifolia :: Chinese Elm
+2296	Eriobotrya deflexa :: Bronze Loquat
+2201	Ligustrum lucidum :: Glossy Privet
+2161	Pinus radiata :: Monterey Pine
+1935	Pyrus kawakamii :: Evergreen Pear
+1854	Cupressus macrocarpa :: Monterey Cypress
+1794	Pittosporum crassifolium :: Karo Tree
+1771	Tristaniopsis laurina 'Elegant' :: Small-leaf Tristania 'Elegant'
+1650	Melaleuca quinquenervia :: Cajeput
+1628	Myoporum laetum :: Myoporum
+1615	Cordyline australis :: Dracena Palm
+1579	Ficus nitida :: Laurel Fig
+1506	Liquidambar styraciflua :: American Sweet Gum
+1439	Ficus retusa nitida :: Banyan Fig
+1399	Juniperus chinensis :: Juniper
+1366	Tristania conferta ::
+1124	Jacaranda mimosifolia :: Jacaranda
+1070	Schinus terebinthifolius :: Brazilian Pepper
+1004	Eucalyptus polyanthemos :: Silver Dollar Eucalyptus
+1003	Lagunaria patersonii :: Primrose Tree
+972		Washingtonia robusta :: Mexican Fan Palm
+952		Ficus microcarpa :: Chinese Banyan
+889		Callistemon viminalis :: Weeping Bottlebrush
+867		Agonis flexuosa :: Peppermint Willow
+858		Ceratonia siliqua :: Carob
+847		Syagrus romanzoffianum :: Queen Palm
+835		Magnolia grandiflora 'Little Gem' :: Little Gem Magnolia
+832		Acacia baileyana :: Bailey's Acacia
+818		Laurus nobilis :: Sweet Bay: Grecian Laurel
+811		Acer rubrum :: Red Maple
+810		Rhaphiolepis Majestic Beauty :: Indian Hawthorn  'Majestic Beau'
+716		Eucalyptus sideroxylon :: Red Ironbark
+
+
+
+
+
+
+
