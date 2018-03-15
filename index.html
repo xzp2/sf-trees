@@ -72,10 +72,10 @@
 		.attr("height", height)
 		.attr("viewBox", "30 420 650 10")
 		.attr("style", "border:1px solid #555;")
-		/*.call(zoom.on("zoom", function () {
+		.call(zoom.on("zoom", function () {
 		    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
 		  }))
-		.append("g")*/
+		.append("g")
 
 	svg.append("image")
 	          .attr("width", width)
@@ -98,8 +98,16 @@
 	}
 
 	var species = {};
-	var dots = [];
-	d3.csv("/TreesTrimmed.csv", function(error, data) {
+	var colors = {};
+
+	d3.csv("/TreesTrimmed.csv", function(data) {
+
+		d3.csv("/SpeciesList.csv", function(data) {
+			data.map(function(d) {
+				colors[d.qSpecies] = d.qColor;
+			});
+		});
+		console.log(colors["Acacia melanoxylon :: Blackwood Acacia"]);
 
 		data.map(function(d) {
 			var treeCoord = projection([d.Longitude, d.Latitude]);
@@ -107,45 +115,31 @@
 				species[d.qSpecies] = [];
 			}
 			species[d.qSpecies].push(treeCoord);
-
-			/*if(d.Latitude != "" && d.Longitude != ""){ //&& category==d.qSpecies) {
-				dots.push(projection([d.Longitude, d.Latitude]));
-			}*/
 		});
-
 
 		for(var s in species) {
 			species[s].forEach(function(coords) {
-				svg.append("circle")
-					.attr("class", species[s])
-					.attr("r", 1)
-					.attr("fill", "#000")
-					.attr("transform, translate(" + coords + ")")
-			})
-			/*svg.selectAll("circle")
-				.data(species[s])
-				.enter().append("circle")
-				.attr("class",species[s])
-				.attr("r", 1)
-				.attr("fill", "#f9ed81")
+				svg
+				.append("circle")
+				.attr("r",1)
+				.attr("class", s)
+				.attr("fill","red")
 				.attr("transform", function(d) {
-					return "translate(" + d + ")";
-				});*/
+					return "translate(" + coords + ")";
+				});
+			})
 		}
-
-		/*svg.selectAll(".category")
-		.data(dots)
-		.enter().append("circle .category")
-		.attr("r", 1)
-		.attr("fill", "#f9ed81")
-		.attr("transform", function(d) {
-			return "translate(" + d + ")";
-		});*/
 	});
 
 	function select(category) {
+		var circles = document.getElementsByTagName("circle");
+		for(i=0;i<circles.length;i++) {
+			circles[i].style.display="";
+			if(circles[i].getAttribute("class") != category) {
+				circles[i].style.display = "none";
+			}
+		}
 
-		d3.selectAll("circle").remove();
 	}
 </script>
 <div class="header">
