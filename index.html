@@ -16,10 +16,12 @@
 		color:#ddd;
 	}
 	.header {
-		float:right;
-		width:550px;
-		height:30px;
+		position:fixed;
+		left:800px;
+		display:inline-block;
+		width:40%;
 		text-align:center;
+		border:1px solid #fff;
 	}
 	.title {
 		width:100%;
@@ -39,6 +41,12 @@
 		display:inline-block;
 		width:150px;
 		height:50px;
+		color:#000;
+	}
+
+	.filt-all {
+		background-color:red;
+		color:#fff;
 	}
 
 	.dot {
@@ -47,7 +55,6 @@
 	  margin-right:5px;
 	  border-radius: 50%;
 	  display: inline-block;
-	  transition: all 500ms cubic-bezier(.93,.1,.42,.91); /*transition: all .3s ease-in-out;*/
 	}
 	
 </style>
@@ -61,7 +68,7 @@
 	var height = 750;
 
 	var projection = d3.geo.mercator()
-		.center([-122.433701, 37.767683]) // San Francisco, roughly
+		.center([-122.433701, 37.767683]) 
 		.scale(225000)
 		.translate([width / 2, height / 2]);
 
@@ -119,7 +126,7 @@
 				species[s].forEach(function(coords) {
 					svg
 					.append("circle")
-					.attr("r",1)
+					.attr("r",0.5)
 					.attr("class", s)
 					.attr("fill",colors[s])
 					.attr("transform", function(d) {
@@ -148,7 +155,8 @@
 
 	<button onclick="zoomin()">Zoom In</button>
 	<button onclick="zoomout()">Zoom Out</button>
-	<button onclick="reset()">Reset View</button><br><br>
+	<button onclick="reset()">Reset Zoom</button>
+	<br><br>
 
 	<div class="filters">
 		<button class="filt" id="vb" onclick="select('Pittosporum undulatum :: Victorian Box')">
@@ -160,6 +168,10 @@
 	    </button>
 	    <button class="filt" onclick="select('Ficus retusa nitida :: Banyan Fig')">
 	    	Banyan Fig
+	    </button>
+
+	    <button class="filt filt-all" id="vb" onclick="select('Pittosporum undulatum :: Victorian Box')">
+	        Show All
 	    </button>
 	</div>
 
