@@ -6,6 +6,10 @@
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 <style>
+	.filters{
+		border:1px solid #333;
+		float:right;
+	}
 </style>
 </head>
 
@@ -35,40 +39,41 @@
 
 	var species = {};
 
+	function select(category) {
 
+		var dots = [];
 
-	console.log(species);
+		d3.csv("/Street_Tree_List.csv", function(error, data) {
 
-	d3.csv("/Street_Tree_List.csv", function(error, data) {
-
-		data.map(function(d) {
-			var treeCoord = [];
-			if(d.Latitude != "" && d.Longitude != "") {
-				treeCoord = projection([d.Longitude, d.Latitude]);
-				if (species[d.qSpecies] == undefined) {
-					species[d.qSpecies] = [];
+			data.map(function(d) {
+				var treeCoord = [];
+				if(d.Latitude != "" && d.Longitude != "" && category==d.qSpecies) {
+					dots.push(projection([d.Longitude, d.Latitude]));
 				}
-				
-				species[d.qSpecies].push(treeCoord);
-			}
+			});
+
+			console.log(dots);
+
+			svg.selectAll(".pin")
+			.data(dots)
+			.enter().append("circle", ".pin")
+			.attr("r", 1)
+			.attr("transform", function(d) {
+				return "translate(" + d + ")";
+			});
 		});
-
-
-
-		console.log(species);
-
-		svg.selectAll(".pin")
-		.data(species["Platanus x hispanica :: Sycamore: London Plane"])
-		.enter().append("circle", ".pin")
-		.attr("r", 1)
-		.attr("transform", function(d) {
-			return "translate(" + d + ")";
-		});
-	});
-
-
-
-
+	}
 </script>
+
+
+<div class="filters">
+	<button onclick="select('Pittosporum undulatum :: Victorian Box')">
+        Victorian Box
+    </button>
+    <button onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
+    	London Plane
+    </button>
+</div>
+
 </body>
 </html>
