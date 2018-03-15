@@ -8,7 +8,7 @@
 	<link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 <style>
 	.filters{
-		border:1px solid #333;
+		border:1px solid #222;
 	}
 	body{
 		background-color:#222;
@@ -27,22 +27,27 @@
 		font-family: 'Patua One', cursive;
 		font-size:30px;
 	}
-	button {
+	.filt {
 		background-color:#fff;
 		border:none;
 		padding:8px;
 		margin:5px;
 		border-radius:3px;
-		font-size:14px;
+		font-size:15px;
 		font-family: 'Open Sans';
 		font-weight:bold;
 		display:inline-block;
 		width:150px;
 		height:50px;
 	}
-	button:hover {
-		background-color:#999;
-		color:#fff;
+
+	.dot {
+	  height: 12px;
+	  width: 12px;
+	  margin-right:5px;
+	  border-radius: 50%;
+	  display: inline-block;
+	  transition: all 500ms cubic-bezier(.93,.1,.42,.91); /*transition: all .3s ease-in-out;*/
 	}
 	
 </style>
@@ -61,52 +66,86 @@
 		.translate([width / 2, height / 2]);
 
 	var zoom = d3.behavior.zoom();
+
 	var svg = d3.select("body").append("svg")
 		.attr("width", width)
 		.attr("height", height)
 		.attr("viewBox", "30 420 650 10")
-		.attr("style", "border:1px solid #555;border-radius:5px")
-		.call(zoom.on("zoom", function () {
+		.attr("style", "border:1px solid #555;")
+		/*.call(zoom.on("zoom", function () {
 		    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
 		  }))
-		.append("g")
+		.append("g")*/
 
 	svg.append("image")
 	          .attr("width", width)
 	          .attr("height", height)
 	          .attr("xlink:href", "sf-map.svg");
 
-	var species = {};
-
 	function reset() {
+		svg.attr("transform", "translate(0,0)" + " scale(1)");
 		zoom.scale(1);
         zoom.translate([0, 0]);
 	};
 
+	function zoomin() {
+		svg.call(zoom.transform, function() {
+			return d3.zoomIdentity
+		      .translate(width / 2.75, height / 2.75)
+		      .scale(zoomLevel)
+		      .translate(-width/2.75, -height/2.75);
+		});
+	}
+
+	var species = {};
+	var dots = [];
+	d3.csv("/TreesTrimmed.csv", function(error, data) {
+
+		data.map(function(d) {
+			var treeCoord = projection([d.Longitude, d.Latitude]);
+			if(species[d.qSpecies] == undefined) {
+				species[d.qSpecies] = [];
+			}
+			species[d.qSpecies].push(treeCoord);
+
+			/*if(d.Latitude != "" && d.Longitude != ""){ //&& category==d.qSpecies) {
+				dots.push(projection([d.Longitude, d.Latitude]));
+			}*/
+		});
+
+
+		for(var s in species) {
+			species[s].forEach(function(coords) {
+				svg.append("circle")
+					.attr("class", species[s])
+					.attr("r", 1)
+					.attr("fill", "#000")
+					.attr("transform, translate(" + coords + ")")
+			})
+			/*svg.selectAll("circle")
+				.data(species[s])
+				.enter().append("circle")
+				.attr("class",species[s])
+				.attr("r", 1)
+				.attr("fill", "#f9ed81")
+				.attr("transform", function(d) {
+					return "translate(" + d + ")";
+				});*/
+		}
+
+		/*svg.selectAll(".category")
+		.data(dots)
+		.enter().append("circle .category")
+		.attr("r", 1)
+		.attr("fill", "#f9ed81")
+		.attr("transform", function(d) {
+			return "translate(" + d + ")";
+		});*/
+	});
+
 	function select(category) {
 
-		var dots = [];
-
 		d3.selectAll("circle").remove();
-
-		d3.csv("/Street_Tree_List.csv", function(error, data) {
-
-			data.map(function(d) {
-				var treeCoord = [];
-				if(d.Latitude != "" && d.Longitude != "" && category==d.qSpecies) {
-					dots.push(projection([d.Longitude, d.Latitude]));
-				}
-			});
-
-			svg.selectAll("circle")
-			.data(dots)
-			.enter().append("circle")
-			.attr("r", 1)
-			.attr("fill", "red")
-			.attr("transform", function(d) {
-				return "translate(" + d + ")";
-			});
-		});
 	}
 </script>
 <div class="header">
@@ -114,16 +153,19 @@
 	This map shows the locations of street trees in San Francisco. 
 	<br><br>
 
+	<button onclick="zoomin()">Zoom In</button>
+	<button onclick="zoomout()">Zoom Out</button>
 	<button onclick="reset()">Reset View</button><br><br>
 
 	<div class="filters">
-		<button onclick="select('Pittosporum undulatum :: Victorian Box')">
+		<button class="filt" id="vb" onclick="select('Pittosporum undulatum :: Victorian Box')">
+			<span class="dot" style="background-color:red"></span>
 	        Victorian Box
 	    </button>
-	    <button onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
+	    <button class="filt" onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
 	    	London Plane
 	    </button>
-	    <button onclick="select('Ficus retusa nitida :: Banyan Fig')">
+	    <button class="filt" onclick="select('Ficus retusa nitida :: Banyan Fig')">
 	    	Banyan Fig
 	    </button>
 	</div>
