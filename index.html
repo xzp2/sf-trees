@@ -102,33 +102,32 @@
 
 	d3.csv("/TreesTrimmed.csv", function(data) {
 
-		d3.csv("/SpeciesList.csv", function(data) {
-			data.map(function(d) {
-				colors[d.qSpecies] = d.qColor;
-			});
-		});
-		console.log(colors["Acacia melanoxylon :: Blackwood Acacia"]);
-
-		data.map(function(d) {
-			var treeCoord = projection([d.Longitude, d.Latitude]);
-			if(species[d.qSpecies] == undefined) {
-				species[d.qSpecies] = [];
-			}
-			species[d.qSpecies].push(treeCoord);
-		});
-
-		for(var s in species) {
-			species[s].forEach(function(coords) {
-				svg
-				.append("circle")
-				.attr("r",1)
-				.attr("class", s)
-				.attr("fill","red")
-				.attr("transform", function(d) {
-					return "translate(" + coords + ")";
+		d3.csv("/SpeciesList.csv", function(data2) {
+			data2.map(function(d) {
+				colors[d.Species] = d.Color;
 				});
-			})
-		}
+
+			data.map(function(d) {
+				var treeCoord = projection([d.Longitude, d.Latitude]);
+				if(species[d.qSpecies] == undefined) {
+					species[d.qSpecies] = [];
+				}
+				species[d.qSpecies].push(treeCoord);
+			});
+
+			for(var s in species) {
+				species[s].forEach(function(coords) {
+					svg
+					.append("circle")
+					.attr("r",1)
+					.attr("class", s)
+					.attr("fill",colors[s])
+					.attr("transform", function(d) {
+						return "translate(" + coords + ")";
+					});
+				})
+			}
+		});
 	});
 
 	function select(category) {
