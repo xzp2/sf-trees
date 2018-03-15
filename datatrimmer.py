@@ -1,7 +1,7 @@
 import csv
 
 topTrees = {
-	"Platanus x hispanica :: Sycamore: London Plane"
+	"Platanus x hispanica :: Sycamore: London Plane",
 	"Metrosideros excelsa :: New Zealand Xmas Tree",
 	"Lophostemon confertus :: Brisbane Box",
 	"Pittosporum undulatum :: Victorian Box",
@@ -34,7 +34,7 @@ topTrees = {
 	"Liquidambar styraciflua :: American Sweet Gum",
 	"Ficus retusa nitida :: Banyan Fig",
 	"Juniperus chinensis :: Juniper",
-	"Tristania conferta ::"
+	"Tristania conferta ::",
 	"Jacaranda mimosifolia :: Jacaranda",
 	"Schinus terebinthifolius :: Brazilian Pepper",
 	"Eucalyptus polyanthemos :: Silver Dollar Eucalyptus",
@@ -50,7 +50,7 @@ topTrees = {
 	"Laurus nobilis :: Sweet Bay: Grecian Laurel",
 	"Acer rubrum :: Red Maple",
 	"Rhaphiolepis Majestic Beauty :: Indian Hawthorn  'Majestic Beau'",
-	"Eucalyptus sideroxylon :: Red Ironbark"
+	"Eucalyptus sideroxylon :: Red Ironbark",
 }
 
 speciesCount = {}
@@ -59,11 +59,11 @@ outFile = open('TreesTrimmed.csv', 'w')
 with open('Street_Tree_List.csv', 'rb') as csvfile:
 	input = csv.reader(csvfile, delimiter=',')
 	for row in input:
-		
+
 		if row[2] not in speciesCount:
 			speciesCount[row[2]] = 0
 		speciesCount[row[2]] += 1
 
-		if row[2] in topTrees:
+		if row[2] in topTrees or row[2] == "qSpecies":
 			outFile.write(row[2] + ',' + row[15] + ',' + row[16] + '\n')
 
