@@ -5,47 +5,83 @@
 	<script src="https://d3js.org/d3.v3.min.js"></script>
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+	<link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
 <style>
 	.filters{
 		border:1px solid #333;
-		float:right;
 	}
-
 	body{
-		background-color:#333;
+		background-color:#222;
+		font-family: 'Open Sans';
+		color:#ddd;
 	}
-
-	pin {
+	.header {
+		float:right;
+		width:550px;
+		height:30px;
+		text-align:center;
+	}
+	.title {
+		width:100%;
+		color:#fff;
+		font-family: 'Patua One', cursive;
+		font-size:30px;
+	}
+	button {
+		background-color:#fff;
+		border:none;
+		padding:8px;
+		margin:5px;
+		border-radius:3px;
+		font-size:14px;
+		font-family: 'Open Sans';
+		font-weight:bold;
+		display:inline-block;
+		width:150px;
+		height:50px;
+	}
+	button:hover {
+		background-color:#999;
 		color:#fff;
 	}
+	
 </style>
 </head>
 
 <body>
+
 <script>
    
-	// Set up size
 	var width = 750;
 	var height = 750;
 
-	// Set up projection that map is using
 	var projection = d3.geo.mercator()
 		.center([-122.433701, 37.767683]) // San Francisco, roughly
 		.scale(225000)
 		.translate([width / 2, height / 2]);
 
+	var zoom = d3.behavior.zoom();
 	var svg = d3.select("body").append("svg")
 		.attr("width", width)
-		.attr("height", height);
+		.attr("height", height)
+		.attr("viewBox", "30 420 650 10")
+		.attr("style", "border:1px solid #555;border-radius:5px")
+		.call(zoom.on("zoom", function () {
+		    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+		  }))
+		.append("g")
 
-	// Add svg map at correct size, assumes map is saved in a subdirectory called "data"
 	svg.append("image")
 	          .attr("width", width)
 	          .attr("height", height)
 	          .attr("xlink:href", "sf-map.svg");
 
-
 	var species = {};
+
+	function reset() {
+		zoom.scale(1);
+        zoom.translate([0, 0]);
+	};
 
 	function select(category) {
 
@@ -62,27 +98,36 @@
 				}
 			});
 
-			console.log(dots);
-
 			svg.selectAll("circle")
 			.data(dots)
 			.enter().append("circle")
 			.attr("r", 1)
+			.attr("fill", "red")
 			.attr("transform", function(d) {
 				return "translate(" + d + ")";
 			});
 		});
 	}
 </script>
+<div class="header">
+	<span class="title">San Francisco: An Urban Forest</span><br><br>
+	This map shows the locations of street trees in San Francisco. 
+	<br><br>
 
+	<button onclick="reset()">Reset View</button><br><br>
 
-<div class="filters">
-	<button onclick="select('Pittosporum undulatum :: Victorian Box')">
-        Victorian Box
-    </button>
-    <button onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
-    	London Plane
-    </button>
+	<div class="filters">
+		<button onclick="select('Pittosporum undulatum :: Victorian Box')">
+	        Victorian Box
+	    </button>
+	    <button onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
+	    	London Plane
+	    </button>
+	    <button onclick="select('Ficus retusa nitida :: Banyan Fig')">
+	    	Banyan Fig
+	    </button>
+	</div>
+
 </div>
 
 </body>
