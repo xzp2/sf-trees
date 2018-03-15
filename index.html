@@ -33,7 +33,11 @@
 	          .attr("xlink:href", "sf-map.svg");
 
 
-	var species = [];
+	var species = {};
+
+
+
+	console.log(species);
 
 	d3.csv("/Street_Tree_List.csv", function(error, data) {
 
@@ -41,34 +45,24 @@
 			var treeCoord = [];
 			if(d.Latitude != "" && d.Longitude != "") {
 				treeCoord = projection([d.Longitude, d.Latitude]);
-				var inSpecies = null;
-				for(i=0; i<species.length; i++) {
-					if(species[i].key == d.qSpecies) {
-						inSpecies = i;
-					}
+				if (species[d.qSpecies] == undefined) {
+					species[d.qSpecies] = [];
 				}
-				if (inSpecies==null) {
-					species.push({
-					    key:   d.qSpecies,
-					    value: []
-					});
-					inSpecies = species.length-1;
-				}
-				species[inSpecies]["value"].push(treeCoord);
 				
-				
+				species[d.qSpecies].push(treeCoord);
 			}
 		});
+
+
+
 		console.log(species);
 
-		//console.log(species);
-
 		svg.selectAll(".pin")
-		.data(species)
+		.data(species["Platanus x hispanica :: Sycamore: London Plane"])
 		.enter().append("circle", ".pin")
 		.attr("r", 1)
 		.attr("transform", function(d) {
-		return "translate(" + d + ")";
+			return "translate(" + d + ")";
 		});
 	});
 
