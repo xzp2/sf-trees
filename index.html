@@ -27,43 +27,49 @@
 		.attr("height", height);
 
 	// Add svg map at correct size, assumes map is saved in a subdirectory called "data"
-	// svg.append("image")
-	//           .attr("width", width)
-	//           .attr("height", height)
-	//           .attr("xlink:href", "sf-map.svg");
+	svg.append("image")
+	          .attr("width", width)
+	          .attr("height", height)
+	          .attr("xlink:href", "sf-map.svg");
+
 
 	var species = [];
 
 	d3.csv("/Street_Tree_List.csv", function(error, data) {
+
 		data.map(function(d) {
-			var tree = [];
-			if(d.Latitude != "" && d.Longitude != "" && d.qSpecies == "Pyrus calleryana :: Ornamental Pear") {
-				tree["latitude"] = d.Latitude;
-				tree["longitude"] = d.Longitude;
-				species.push(tree);
+			var treeCoord = [];
+			if(d.Latitude != "" && d.Longitude != "") {
+				treeCoord = projection([d.Longitude, d.Latitude]);
+				var inSpecies = null;
+				for(i=0; i<species.length; i++) {
+					if(species[i].key == d.qSpecies) {
+						inSpecies = i;
+					}
+				}
+				if (inSpecies==null) {
+					species.push({
+					    key:   d.qSpecies,
+					    value: []
+					});
+					inSpecies = species.length-1;
+				}
+				species[inSpecies]["value"].push(treeCoord);
+				
+				
 			}
 		});
-		console.log(species.length);
+		console.log(species);
 
-		// console.log(species[0].latitude);
-		// svg.append("circle")
-		// 	.data([species[0].latitude,species[0].longitude]).enter()
-		// 	.attr("cx", function (d) { console.log(projection(d)); return projection(d)[0]; })
-		// 	.attr("cy", function (d) { return projection(d)[1]; })
-		// 	.attr("r", "5px")
-		// 	.attr("fill", "red")
+		//console.log(species);
 
-
-			svg.selectAll(".pin")
-		  .data(species)
-		  .enter().append("circle", ".pin")
-		  .attr("r", 1)
-		  .attr("transform", function(d) {
-		    return "translate(" + projection([
-		      d.longitude,
-		      d.latitude
-		    ]) + ")";
-		  });
+		svg.selectAll(".pin")
+		.data(species)
+		.enter().append("circle", ".pin")
+		.attr("r", 1)
+		.attr("transform", function(d) {
+		return "translate(" + d + ")";
+		});
 	});
 
 
