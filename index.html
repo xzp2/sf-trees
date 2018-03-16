@@ -80,6 +80,7 @@
 		.translate([width / 2, height / 2]);
 
 	var zoom = d3.behavior.zoom()
+				 .scaleExtent([0.1, 5])
 
 	var svg = d3.select("body").append("svg")
 		.attr("width", width)
@@ -206,7 +207,7 @@
 	    	Pohutukawa
 	    </button>
 	    <button class="filt" onclick="select('Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry')">
-	    	<span class="dot" style="background-color:#E64A19"></span>
+	    	<span class="dot" style="background-color:#673AB7"></span>
 	    	Kwanzan Cherry
 	    </button>
 	    <button class="filt" onclick="select('Prunus cerasifera :: Cherry Plum')">
