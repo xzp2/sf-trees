@@ -154,9 +154,9 @@
 	var species = {};
 	var colors = {};
 
-	d3.csv("/TreesTrimmed.csv", function(data) {
+	d3.csv("TreesTrimmed.csv", function(data) {
 
-		d3.csv("/SpeciesList.csv", function(data2) {
+		d3.csv("SpeciesList.csv", function(data2) {
 			data2.map(function(d) {
 				colors[d.Species] = d.Color;
 				});
@@ -208,7 +208,7 @@
 
 <div class="header">
 	<div class="loading" style="display:none">Loading...</div>
-	<span class="title">San Francisco: An Urban Forest</span><br>
+	<span class="title">San Francisco: An Urban</span><br>
 	These are the locations of the 20 most commonly found street trees in San Francisco!<br>You can <b>zoom</b> in and out by scrolling on your mousepad.<br>Click <b>reset</b> to see the map at its original scale.<br><br>
 	<button class="filt reset" onclick="reset()">Reset Zoom to Original</button><br>
 	<button class="filt filt-all" id="vb" onclick="showAll()">
