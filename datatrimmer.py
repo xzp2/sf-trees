@@ -8,9 +8,9 @@ topTrees = {
 	"Tristaniopsis laurina :: Swamp Myrtle" : "#FFC107",
 	"Prunus cerasifera :: Cherry Plum" : "#FFEB3B",
 	"Magnolia grandiflora :: Southern Magnolia" : "#607D8B",
-	"Ficus microcarpa nitida Green Gem :: Indian Laurel Fig Tree Green Gem" : "#00BCD4",
-	"Arbutus Marina :: Hybrid Strawberry Tree" : "#1976D2",
-	"Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry" : "#673AB7",
+	"Ficus microcarpa nitida 'Green Gem' :: Indian Laurel Fig Tree 'Green Gem'" : "#00BCD4",
+	"Arbutus 'Marina' :: Hybrid Strawberry Tree" : "#1976D2",
+	"Prunus serrulata 'Kwanzan' :: Kwanzan Flowering Cherry" : "#673AB7",
 	"Acacia melanoxylon :: Blackwood Acacia" : "#7B1FA2",
 	"Maytenus boaria :: Mayten" : "#00796B",
 	"Olea europaea :: Olive Tree" : "#303F9F",
@@ -26,7 +26,7 @@ topTrees = {
 	# "Pyrus kawakamii :: Evergreen Pear" : "#90CAF9",
 	# "Cupressus macrocarpa :: Monterey Cypress" : "#ef9a9a",
 	# "Pittosporum crassifolium :: Karo Tree" : "#FFE082",
-	# "Tristaniopsis laurina Elegant :: Small-leaf Tristania Elegant" : "#C5E1A5",
+	# "Tristaniopsis laurina 'Elegant' :: Small-leaf Tristania 'Elegant'" : "#C5E1A5",
 	# "Melaleuca quinquenervia :: Cajeput" : "#F48FB1",
 	# "Myoporum laetum :: Myoporum" : "#FFCC80",
 	# "Cordyline australis :: Dracena Palm" : "#80CBC4",
@@ -45,11 +45,11 @@ topTrees = {
 	# "Agonis flexuosa :: Peppermint Willow" : "#FFF176",
 	# "Ceratonia siliqua :: Carob" : "#",
 	# "Syagrus romanzoffianum :: Queen Palm" : "#",
-	# "Magnolia grandiflora Little Gem :: Little Gem Magnolia" : "#",
-	# "Acacia baileyana :: Baileys Acacia" : "#",
+	# "Magnolia grandiflora 'Little Gem' :: Little Gem Magnolia" : "#",
+	# "Acacia baileyana :: Bailey's Acacia" : "#",
 	# "Laurus nobilis :: Sweet Bay: Grecian Laurel" : "#",
 	# "Acer rubrum :: Red Maple" : "#",
-	# "Rhaphiolepis Majestic Beauty :: Indian Hawthorn  Majestic Beau" : "#",
+	# "Rhaphiolepis Majestic Beauty :: Indian Hawthorn  'Majestic Beau'" : "#",
 	# "Eucalyptus sideroxylon :: Red Ironbark" : "#",
 }
 
@@ -75,6 +75,6 @@ with open('Street_Tree_List.csv', 'rb') as csvfile:
 		if row[2] in topTrees or row[2] == "qSpecies":
 			outString = row[2] + ',' + row[15] + ',' + row[16] + '\n'
 			if outString not in distinctTrees:
-				treesTrimmedFile.write(outString)
+				treesTrimmedFile.write(outString.replace("'", ""))
 			distinctTrees[outString] = 0
 
