@@ -14,47 +14,54 @@
 		background-color:#222;
 		font-family: 'Open Sans';
 		color:#ddd;
+		overflow:auto;
 	}
 	.header {
 		position:fixed;
-		left:800px;
+		left:770px;
 		display:inline-block;
-		width:40%;
+		width:35%;
+		height:100%;
 		text-align:center;
-		border:1px solid #fff;
+		overflow:auto;
 	}
 	.title {
 		width:100%;
-		color:#fff;
 		font-family: 'Patua One', cursive;
 		font-size:30px;
 	}
 	.filt {
-		background-color:#fff;
+		background-color:#444;
 		border:none;
 		padding:8px;
 		margin:5px;
-		border-radius:3px;
-		font-size:15px;
+		border-radius:5px;
+		font-size:13px;
 		font-family: 'Open Sans';
-		font-weight:bold;
+		color:#ddd;
 		display:inline-block;
-		width:150px;
-		height:50px;
-		color:#000;
+		width:200px;
+		height:35px;
+	}
+	.filt:hover {
+		background-color:#777;
+		pointer:cursor;
 	}
 
 	.filt-all {
 		background-color:red;
 		color:#fff;
+		margin-bottom:15px;
 	}
 
 	.dot {
-	  height: 12px;
-	  width: 12px;
-	  margin-right:5px;
+	  height: 13px;
+	  width: 13px;
 	  border-radius: 50%;
 	  display: inline-block;
+	  float:left;
+	  margin-top:3px;
+	  margin-left:10px;
 	}
 	
 </style>
@@ -72,12 +79,12 @@
 		.scale(225000)
 		.translate([width / 2, height / 2]);
 
-	var zoom = d3.behavior.zoom();
+	var zoom = d3.behavior.zoom()
 
 	var svg = d3.select("body").append("svg")
 		.attr("width", width)
-		.attr("height", height)
-		.attr("viewBox", "30 420 650 10")
+		.attr("height", 700)
+		.attr("viewBox", "55 400 590 5")
 		.attr("style", "border:1px solid #555;")
 		.call(zoom.on("zoom", function () {
 		    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
@@ -96,12 +103,15 @@
 	};
 
 	function zoomin() {
-		svg.call(zoom.transform, function() {
-			return d3.zoomIdentity
-		      .translate(width / 2.75, height / 2.75)
-		      .scale(zoomLevel)
-		      .translate(-width/2.75, -height/2.75);
-		});
+		zoom.translate(0.1).scale(0.1);
+		svg.attr("transform",
+				        "translate(10,10)" +
+				        "scale(" + 1.1 + ")"
+				    )
+			.call(zoom.on("zoom", function () {
+			    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+			  }))
+			.append("g");
 	}
 
 	var species = {};
@@ -126,13 +136,14 @@
 				species[s].forEach(function(coords) {
 					svg
 					.append("circle")
-					.attr("r",0.5)
+					.attr("r",0.7)
 					.attr("class", s)
 					.attr("fill",colors[s])
 					.attr("transform", function(d) {
 						return "translate(" + coords + ")";
 					});
-				})
+				});
+				console.log(s);
 			}
 		});
 	});
@@ -145,7 +156,14 @@
 				circles[i].style.display = "none";
 			}
 		}
+	}
 
+
+	function showAll() {
+		var circles = document.getElementsByTagName("circle");
+		for(i=0;i<circles.length;i++) {
+			circles[i].style.display="";
+		}
 	}
 </script>
 <div class="header">
@@ -156,23 +174,95 @@
 	<button onclick="zoomin()">Zoom In</button>
 	<button onclick="zoomout()">Zoom Out</button>
 	<button onclick="reset()">Reset Zoom</button>
-	<br><br>
+	<br>
 
 	<div class="filters">
-		<button class="filt" id="vb" onclick="select('Pittosporum undulatum :: Victorian Box')">
-			<span class="dot" style="background-color:red"></span>
-	        Victorian Box
-	    </button>
-	    <button class="filt" onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
+		<button class="filt" onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
+	    	<span class="dot" style="background-color:#4CAF50"></span>
 	    	London Plane
 	    </button>
-	    <button class="filt" onclick="select('Ficus retusa nitida :: Banyan Fig')">
-	    	Banyan Fig
+		<button class="filt" id="vb" onclick="select('Pittosporum undulatum :: Victorian Box')">
+			<span class="dot" style="background-color:#E91E63"></span>
+	        Victorian Box
+	    </button>
+	    <button class="filt" onclick="select('Tristaniopsis laurina :: Swamp Myrtle')">
+	    	<span class="dot" style="background-color:#FFC107"></span>
+	    	Swamp Myrtle
+	    </button>
+	    <button class="filt" onclick="select('Arbutus Marina :: Hybrid Strawberry Tree')">
+	    	<span class="dot" style="background-color:#1976D2"></span>
+	    	Strawberry
+	    </button>
+	    <button class="filt" onclick="select('Magnolia grandiflora :: Southern Magnolia')">
+	    	<span class="dot" style="background-color:#607D8B"></span>
+	    	Bull Bay
+	    </button>
+	     <button class="filt" onclick="select('Ginkgo biloba :: Maidenhair Tree')">
+	    	<span class="dot" style="background-color:#AFB42B"></span>
+	    	Maidenhair
+	    </button>
+	    <button class="filt" onclick="select('Metrosideros excelsa :: New Zealand Xmas Tree')">
+	    	<span class="dot" style="background-color:#f44336"></span>
+	    	Pohutukawa
+	    </button>
+	    <button class="filt" onclick="select('Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry')">
+	    	<span class="dot" style="background-color:#E64A19"></span>
+	    	Kwanzan Cherry
+	    </button>
+	    <button class="filt" onclick="select('Prunus cerasifera :: Cherry Plum')">
+	    	<span class="dot" style="background-color:#FFEB3B"></span>
+	    	Cherry Plum
+	    </button>
+	    <button class="filt" onclick="select('Eriobotrya deflexa :: Bronze Loquat')">
+	    	<span class="dot" style="background-color:#388E3C"></span>
+	    	Bronze Loquat
+	    </button>
+	    <button class="filt" onclick="select('Pyrus calleryana :: Ornamental Pear')">
+	    	<span class="dot" style="background-color:#FBC02D"></span>
+	    	Ornamental Pear
+	    </button>
+	    <button class="filt" onclick="select('Olea europaea :: Olive Tree')">
+	    	<span class="dot" style="background-color:#303F9F"></span>
+	    	Olive Tree
+	    </button>
+	    <button class="filt" onclick="select('Ficus microcarpa nitida Green Gem :: Indian Laurel Fig Tree Green Gem')">
+	    	<span class="dot" style="background-color:#00BCD4"></span>
+	    	Green Gem
+	    </button>
+	    <button class="filt" onclick="select('Callistemon citrinus :: Lemon Bottlebrush')">
+	    	<span class="dot" style="background-color:#795548"></span>
+	    	Lemon Bottlebrush
+	    </button>
+	    <button class="filt" onclick="select('Acacia melanoxylon :: Blackwood Acacia')">
+	    	<span class="dot" style="background-color:#7B1FA2"></span>
+	    	Blackwood Acacia
+	    </button>
+	     <button class="filt" onclick="select('Maytenus boaria :: Mayten')">
+	    	<span class="dot" style="background-color:#00796B"></span>
+	    	Mayten
+	    </button>
+	    <button class="filt" onclick="select('Ulmus parvifolia :: Chinese Elm')">
+	    	<span class="dot" style="background-color:#d32f2f"></span>
+	    	Chinese Elm
+	    </button>
+	    <button class="filt" onclick="select('Prunus serrulata :: Ornamental Cherry')">
+	    	<span class="dot" style="background-color:#9C27B0"></span>
+	    	Ornamental Cherry
+	    </button>
+	    <button class="filt" onclick="select('Corymbia ficifolia :: Red Flowering Gum')">
+	    	<span class="dot" style="background-color:#FF9800"></span>
+	    	Red Flowering Gum
+	    </button>
+	    <button class="filt" onclick="select('Lophostemon confertus :: Brisbane Box')">
+	    	<span class="dot" style="background-color:#2196F3"></span>
+	    	Brisbane Box
 	    </button>
 
-	    <button class="filt filt-all" id="vb" onclick="select('Pittosporum undulatum :: Victorian Box')">
+	    <button class="filt filt-all" id="vb" onclick="showAll()">
 	        Show All
 	    </button>
+
+
 	</div>
 
 </div>
