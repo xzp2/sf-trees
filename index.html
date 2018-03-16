@@ -4,7 +4,6 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
 	<script src="https://d3js.org/d3.v3.min.js"></script>
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
-	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 	<link href="https://fonts.googleapis.com/css?family=Arimo|Patua+One" rel="stylesheet">
 <style>
 
@@ -94,7 +93,6 @@
 <body>
 
 <script>
-   	console.log('before');
 
 	var width = 750;
 	var height = 750;
@@ -202,13 +200,11 @@
 		}
 	}
 
-	console.log("after");
 </script>
 
 
 <div class="header">
-	<div class="loading" style="display:none">Loading...</div>
-	<span class="title">San Francisco: An Urban</span><br>
+	<span class="title">San Francisco: An Urban Forest</span><br>
 	These are the locations of the 20 most commonly found street trees in San Francisco!<br>You can <b>zoom</b> in and out by scrolling on your mousepad.<br>Click <b>reset</b> to see the map at its original scale.<br><br>
 	<button class="filt reset" onclick="reset()">Reset Zoom to Original</button><br>
 	<button class="filt filt-all" id="vb" onclick="showAll()">
