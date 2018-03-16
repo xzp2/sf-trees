@@ -5,16 +5,21 @@
 	<script src="https://d3js.org/d3.v3.min.js"></script>
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-	<link href="https://fonts.googleapis.com/css?family=Patua+One" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Arimo|Patua+One" rel="stylesheet">
 <style>
+
 	.filters{
 		border:1px solid #222;
 	}
+	b{
+		color:#FFF9C4;
+	}
 	body{
 		background-color:#222;
-		font-family: 'Open Sans';
+		font-family: 'Arimo';
 		color:#ddd;
 		overflow:auto;
+		font-size:12px;
 	}
 	.header {
 		position:fixed;
@@ -30,18 +35,31 @@
 		font-family: 'Patua One', cursive;
 		font-size:30px;
 	}
-	.filt {
+	.button {
 		background-color:#444;
 		border:none;
 		padding:8px;
 		margin:5px;
 		border-radius:5px;
 		font-size:13px;
-		font-family: 'Open Sans';
+		font-family: 'Arimo';
 		color:#ddd;
 		display:inline-block;
 		width:200px;
-		height:35px;
+		height:30px;
+	}
+	.filt {
+		background-color:#444;
+		border:none;
+		padding:8px;
+		margin:5px;
+		border-radius:5px;
+		font-size:12px;
+		font-family: 'Arimo';
+		color:#ddd;
+		display:inline-block;
+		width:200px;
+		height:34px;
 	}
 	.filt:hover {
 		background-color:#777;
@@ -49,9 +67,15 @@
 	}
 
 	.filt-all {
-		background-color:red;
 		color:#fff;
-		margin-bottom:15px;
+		background-color:#222;
+		border:1px solid #aaa;
+	}
+
+	.reset {
+		color:#fff;
+		background-color:#222;
+		border:1px solid #aaa;
 	}
 
 	.dot {
@@ -60,7 +84,7 @@
 	  border-radius: 50%;
 	  display: inline-block;
 	  float:left;
-	  margin-top:3px;
+	  margin-top:1px;
 	  margin-left:10px;
 	}
 	
@@ -70,7 +94,8 @@
 <body>
 
 <script>
-   
+   	console.log('before');
+
 	var width = 750;
 	var height = 750;
 
@@ -80,17 +105,28 @@
 		.translate([width / 2, height / 2]);
 
 	var zoom = d3.behavior.zoom()
-				 .scaleExtent([0.1, 5])
+			    .scaleExtent([1, 8])
+    			.on("zoom", limit);
 
 	var svg = d3.select("body").append("svg")
 		.attr("width", width)
 		.attr("height", 700)
 		.attr("viewBox", "55 400 590 5")
 		.attr("style", "border:1px solid #555;")
+
 		.call(zoom.on("zoom", function () {
-		    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+		    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
 		  }))
-		.append("g")
+		.append("g");
+
+	function limit() {
+	  	var t = d3.event.translate,
+	    s = d3.event.scale;
+	  	t[0] = Math.min(width / 2 * (s - 1), Math.max(width / 2 * (1 - s), t[0]));
+	  	t[1] = Math.min(height / 2 * (s - 1) + 230 * s, Math.max(height / 2 * (1 - s) - 230 * s, t[1]));
+	  zoom.translate(t);
+	  g.style("stroke-width", 1 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
+	}
 
 	svg.append("image")
 	          .attr("width", width)
@@ -144,7 +180,6 @@
 						return "translate(" + coords + ")";
 					});
 				});
-				console.log(s);
 			}
 		});
 	});
@@ -166,16 +201,19 @@
 			circles[i].style.display="";
 		}
 	}
-</script>
-<div class="header">
-	<span class="title">San Francisco: An Urban Forest</span><br><br>
-	This map shows the locations of street trees in San Francisco. 
-	<br><br>
 
-	<button onclick="zoomin()">Zoom In</button>
-	<button onclick="zoomout()">Zoom Out</button>
-	<button onclick="reset()">Reset Zoom</button>
-	<br>
+	console.log("after");
+</script>
+
+
+<div class="header">
+	<div class="loading" style="display:none">Loading...</div>
+	<span class="title">San Francisco: An Urban Forest</span><br>
+	These are the locations of the 20 most commonly found street trees in San Francisco!<br>You can <b>zoom</b> in and out by scrolling on your mousepad.<br>Click <b>reset</b> to see the map at its original scale.<br><br>
+	<button class="filt reset" onclick="reset()">Reset Zoom to Original</button><br>
+	<button class="filt filt-all" id="vb" onclick="showAll()">
+	    Remove Filters
+	</button>
 
 	<div class="filters">
 		<button class="filt" onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
@@ -195,7 +233,7 @@
 	    	Strawberry
 	    </button>
 	    <button class="filt" onclick="select('Magnolia grandiflora :: Southern Magnolia')">
-	    	<span class="dot" style="background-color:#607D8B"></span>
+	    	<span class="dot" style="background-color:#F5F5F5"></span>
 	    	Bull Bay
 	    </button>
 	     <button class="filt" onclick="select('Ginkgo biloba :: Maidenhair Tree')">
@@ -215,11 +253,11 @@
 	    	Cherry Plum
 	    </button>
 	    <button class="filt" onclick="select('Eriobotrya deflexa :: Bronze Loquat')">
-	    	<span class="dot" style="background-color:#388E3C"></span>
+	    	<span class="dot" style="background-color:#FF9E80"></span>
 	    	Bronze Loquat
 	    </button>
 	    <button class="filt" onclick="select('Pyrus calleryana :: Ornamental Pear')">
-	    	<span class="dot" style="background-color:#FBC02D"></span>
+	    	<span class="dot" style="background-color:#C5E1A5"></span>
 	    	Ornamental Pear
 	    </button>
 	    <button class="filt" onclick="select('Olea europaea :: Olive Tree')">
@@ -231,7 +269,7 @@
 	    	Green Gem
 	    </button>
 	    <button class="filt" onclick="select('Callistemon citrinus :: Lemon Bottlebrush')">
-	    	<span class="dot" style="background-color:#795548"></span>
+	    	<span class="dot" style="background-color:#FFF9C4"></span>
 	    	Lemon Bottlebrush
 	    </button>
 	    <button class="filt" onclick="select('Acacia melanoxylon :: Blackwood Acacia')">
@@ -247,7 +285,7 @@
 	    	Chinese Elm
 	    </button>
 	    <button class="filt" onclick="select('Prunus serrulata :: Ornamental Cherry')">
-	    	<span class="dot" style="background-color:#9C27B0"></span>
+	    	<span class="dot" style="background-color:#e57373"></span>
 	    	Ornamental Cherry
 	    </button>
 	    <button class="filt" onclick="select('Corymbia ficifolia :: Red Flowering Gum')">
@@ -259,9 +297,6 @@
 	    	Brisbane Box
 	    </button>
 
-	    <button class="filt filt-all" id="vb" onclick="showAll()">
-	        Show All
-	    </button>
 
 
 	</div>
