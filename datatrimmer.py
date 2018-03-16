@@ -62,7 +62,7 @@ treesTrimmedFile = open('TreesTrimmed.csv', 'w')
 speciesListFile.write("Species,Color\n")
 
 for key in topTrees:
-	speciesListFile.write(key +',' + topTrees[key] + '\n')
+	speciesListFile.write(key.replace("'","") +',' + topTrees[key].replace("'","") + '\n')
 
 
 with open('Street_Tree_List.csv', 'rb') as csvfile:
