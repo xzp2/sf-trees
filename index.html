@@ -5,6 +5,12 @@
 	<script src="https://d3js.org/d3.v3.min.js"></script>
 	<script src="https://d3js.org/topojson.v2.min.js"></script>
 	<link href="https://fonts.googleapis.com/css?family=Arimo|Patua+One" rel="stylesheet">
+	<!-- mapbox -->
+	<script src='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js'></script>
+	<link href='https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css' rel='stylesheet' />
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
 <style>
 
 	.filters{
@@ -17,22 +23,22 @@
 		background-color:#222;
 		font-family: 'Arimo';
 		color:#ddd;
-		overflow:auto;
-		font-size:12px;
+		font-size:15px;
 	}
 	.header {
-		position:fixed;
-		left:770px;
+		left:60%;
+		float:right;
 		display:inline-block;
-		width:35%;
-		height:100%;
+		width:40%;
 		text-align:center;
-		overflow:auto;
 	}
 	.title {
 		width:100%;
 		font-family: 'Patua One', cursive;
+		color:#aaa;
 		font-size:30px;
+		display:block;
+		padding-bottom:10px;
 	}
 	.button {
 		background-color:#444;
@@ -44,7 +50,7 @@
 		font-family: 'Arimo';
 		color:#ddd;
 		display:inline-block;
-		width:200px;
+		width:45%;
 		height:30px;
 	}
 	.filt {
@@ -57,7 +63,7 @@
 		font-family: 'Arimo';
 		color:#ddd;
 		display:inline-block;
-		width:200px;
+		width:45%;
 		height:34px;
 	}
 	.filt:hover {
@@ -66,9 +72,25 @@
 	}
 
 	.filt-all {
+		background-color:#444;
+		border:none;
+		padding:8px;
+		margin:20px;
+		border-radius:5px;
+		font-size:12px;
+		font-family: 'Arimo';
+		color:#ddd;
+		display:inline-block;
+		width:45%;
+		height:34px;
 		color:#fff;
 		background-color:#222;
 		border:1px solid #aaa;
+	}
+
+	.filt-all:hover {
+		background-color:#777;
+		pointer:cursor;
 	}
 
 	.reset {
@@ -92,203 +114,93 @@
 
 <body>
 
-<script>
-
-	var width = 750;
-	var height = 750;
-
-	var projection = d3.geo.mercator()
-		.center([-122.433701, 37.767683]) 
-		.scale(225000)
-		.translate([width / 2, height / 2]);
-
-	var zoom = d3.behavior.zoom()
-			    .scaleExtent([1, 8])
-    			.on("zoom", limit);
-
-	var svg = d3.select("body").append("svg")
-		.attr("width", width)
-		.attr("height", 700)
-		.attr("viewBox", "55 400 590 5")
-		.attr("style", "border:1px solid #555;")
-
-		.call(zoom.on("zoom", function () {
-		    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
-		  }))
-		.append("g");
-
-	function limit() {
-	  	var t = d3.event.translate,
-	    s = d3.event.scale;
-	  	t[0] = Math.min(width / 2 * (s - 1), Math.max(width / 2 * (1 - s), t[0]));
-	  	t[1] = Math.min(height / 2 * (s - 1) + 230 * s, Math.max(height / 2 * (1 - s) - 230 * s, t[1]));
-	  zoom.translate(t);
-	  g.style("stroke-width", 1 / s).attr("transform", "translate(" + t + ")scale(" + s + ")");
-	}
-
-	svg.append("image")
-	          .attr("width", width)
-	          .attr("height", height)
-	          .attr("xlink:href", "sf-map.svg");
-
-	function reset() {
-		svg.attr("transform", "translate(0,0)" + " scale(1)");
-		zoom.scale(1);
-        zoom.translate([0, 0]);
-	};
-
-	function zoomin() {
-		zoom.translate(0.1).scale(0.1);
-		svg.attr("transform",
-				        "translate(10,10)" +
-				        "scale(" + 1.1 + ")"
-				    )
-			.call(zoom.on("zoom", function () {
-			    svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-			  }))
-			.append("g");
-	}
-
-	var species = {};
-	var colors = {};
-
-	d3.csv("TreesTrimmed.csv", function(data) {
-
-		d3.csv("SpeciesList.csv", function(data2) {
-			data2.map(function(d) {
-				colors[d.Species] = d.Color;
-				});
-
-			data.map(function(d) {
-				var treeCoord = projection([d.Longitude, d.Latitude]);
-				if(species[d.qSpecies] == undefined) {
-					species[d.qSpecies] = [];
-				}
-				species[d.qSpecies].push(treeCoord);
-			});
-
-			for(var s in species) {
-				species[s].forEach(function(coords) {
-					svg
-					.append("circle")
-					.attr("r",0.7)
-					.attr("class", s)
-					.attr("fill",colors[s])
-					.attr("transform", function(d) {
-						return "translate(" + coords + ")";
-					});
-				});
-			}
-		});
-	});
-
-	function select(category) {
-		var circles = document.getElementsByTagName("circle");
-		for(i=0;i<circles.length;i++) {
-			circles[i].style.display="";
-			if(circles[i].getAttribute("class") != category) {
-				circles[i].style.display = "none";
-			}
-		}
-	}
-
-
-	function showAll() {
-		var circles = document.getElementsByTagName("circle");
-		for(i=0;i<circles.length;i++) {
-			circles[i].style.display="";
-		}
-	}
-
-</script>
-
+<div id='map' style="height:650px;float:left;width:55%"></div>
 
 <div class="header">
-	<span class="title">San Francisco: An Urban Forest</span><br>
-	These are the locations of the 20 most commonly found street trees in San Francisco!<br>You can <b>zoom</b> in and out by scrolling on your mousepad.<br>Click <b>reset</b> to see the map at its original scale.<br><br>
-	<button class="filt reset" onclick="reset()">Reset Zoom to Original</button><br>
-	<button class="filt filt-all" id="vb" onclick="showAll()">
-	    Remove Filters
+	<span class="title">San Francisco: An Urban Forest</span>
+	This map shows the locations of the 20 most commonly found street trees in San Francisco, as well as information about each species.<br>
+	<button class="filt-all" id="vb" onclick="showAll()">
+	    Show All Trees
 	</button>
 
 	<div class="filters">
-		<button class="filt" onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
+		<button class="filt" name="button" id="Platanus x hispanica :: Sycamore: London Plane" onclick="select('Platanus x hispanica :: Sycamore: London Plane')">
 	    	<span class="dot" style="background-color:#4CAF50"></span>
 	    	London Plane
 	    </button>
-		<button class="filt" id="vb" onclick="select('Pittosporum undulatum :: Victorian Box')">
+		<button class="filt" id="Pittosporum undulatum :: Victorian Box" onclick="select('Pittosporum undulatum :: Victorian Box')">
 			<span class="dot" style="background-color:#E91E63"></span>
 	        Victorian Box
 	    </button>
-	    <button class="filt" onclick="select('Tristaniopsis laurina :: Swamp Myrtle')">
+	    <button class="filt" id="Tristaniopsis laurina :: Swamp Myrtle" onclick="select('Tristaniopsis laurina :: Swamp Myrtle')">
 	    	<span class="dot" style="background-color:#FFC107"></span>
 	    	Swamp Myrtle
 	    </button>
-	    <button class="filt" onclick="select('Arbutus Marina :: Hybrid Strawberry Tree')">
+	    <button class="filt" id="Arbutus Marina :: Hybrid Strawberry Tree" onclick="select('Arbutus Marina :: Hybrid Strawberry Tree')">
 	    	<span class="dot" style="background-color:#1976D2"></span>
 	    	Strawberry
 	    </button>
-	    <button class="filt" onclick="select('Magnolia grandiflora :: Southern Magnolia')">
+	    <button class="filt" id="Magnolia grandiflora :: Southern Magnolia" onclick="select('Magnolia grandiflora :: Southern Magnolia')">
 	    	<span class="dot" style="background-color:#F5F5F5"></span>
 	    	Bull Bay
 	    </button>
-	     <button class="filt" onclick="select('Ginkgo biloba :: Maidenhair Tree')">
+	     <button class="filt" id="Ginkgo biloba :: Maidenhair Tree" onclick="select('Ginkgo biloba :: Maidenhair Tree')">
 	    	<span class="dot" style="background-color:#AFB42B"></span>
 	    	Maidenhair
 	    </button>
-	    <button class="filt" onclick="select('Metrosideros excelsa :: New Zealand Xmas Tree')">
+	    <button class="filt" id="Metrosideros excelsa :: New Zealand Xmas Tree" onclick="select('Metrosideros excelsa :: New Zealand Xmas Tree')">
 	    	<span class="dot" style="background-color:#f44336"></span>
 	    	Pohutukawa
 	    </button>
-	    <button class="filt" onclick="select('Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry')">
+	    <button class="filt" id="Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry" onclick="select('Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry')">
 	    	<span class="dot" style="background-color:#673AB7"></span>
 	    	Kwanzan Cherry
 	    </button>
-	    <button class="filt" onclick="select('Prunus cerasifera :: Cherry Plum')">
+	    <button class="filt" id="Prunus cerasifera :: Cherry Plum" onclick="select('Prunus cerasifera :: Cherry Plum')">
 	    	<span class="dot" style="background-color:#FFEB3B"></span>
 	    	Cherry Plum
 	    </button>
-	    <button class="filt" onclick="select('Eriobotrya deflexa :: Bronze Loquat')">
+	    <button class="filt" id="Eriobotrya deflexa :: Bronze Loquat" onclick="select('Eriobotrya deflexa :: Bronze Loquat')">
 	    	<span class="dot" style="background-color:#FF9E80"></span>
 	    	Bronze Loquat
 	    </button>
-	    <button class="filt" onclick="select('Pyrus calleryana :: Ornamental Pear')">
+	    <button class="filt" id="Pyrus calleryana :: Ornamental Pear" onclick="select('Pyrus calleryana :: Ornamental Pear')">
 	    	<span class="dot" style="background-color:#C5E1A5"></span>
 	    	Ornamental Pear
 	    </button>
-	    <button class="filt" onclick="select('Olea europaea :: Olive Tree')">
+	    <button class="filt" id="Olea europaea :: Olive Tree" onclick="select('Olea europaea :: Olive Tree')">
 	    	<span class="dot" style="background-color:#303F9F"></span>
 	    	Olive Tree
 	    </button>
-	    <button class="filt" onclick="select('Ficus microcarpa nitida Green Gem :: Indian Laurel Fig Tree Green Gem')">
+	    <button class="filt" id="Ficus microcarpa nitida Green Gem :: Indian Laurel Fig Tree Green Gem" onclick="select('Ficus microcarpa nitida Green Gem :: Indian Laurel Fig Tree Green Gem')">
 	    	<span class="dot" style="background-color:#00BCD4"></span>
 	    	Green Gem
 	    </button>
-	    <button class="filt" onclick="select('Callistemon citrinus :: Lemon Bottlebrush')">
+	    <button class="filt" id="Callistemon citrinus :: Lemon Bottlebrush" onclick="select('Callistemon citrinus :: Lemon Bottlebrush')">
 	    	<span class="dot" style="background-color:#FFF9C4"></span>
 	    	Lemon Bottlebrush
 	    </button>
-	    <button class="filt" onclick="select('Acacia melanoxylon :: Blackwood Acacia')">
+	    <button class="filt" id="Acacia melanoxylon :: Blackwood Acacia" onclick="select('Acacia melanoxylon :: Blackwood Acacia')">
 	    	<span class="dot" style="background-color:#7B1FA2"></span>
 	    	Blackwood Acacia
 	    </button>
-	     <button class="filt" onclick="select('Maytenus boaria :: Mayten')">
+	     <button class="filt" id="Maytenus boaria :: Mayten" onclick="select('Maytenus boaria :: Mayten')">
 	    	<span class="dot" style="background-color:#00796B"></span>
 	    	Mayten
 	    </button>
-	    <button class="filt" onclick="select('Ulmus parvifolia :: Chinese Elm')">
+	    <button class="filt" id="Ulmus parvifolia :: Chinese Elm" onclick="select('Ulmus parvifolia :: Chinese Elm')">
 	    	<span class="dot" style="background-color:#d32f2f"></span>
 	    	Chinese Elm
 	    </button>
-	    <button class="filt" onclick="select('Prunus serrulata :: Ornamental Cherry')">
+	    <button class="filt" id="Prunus serrulata :: Ornamental Cherry" onclick="select('Prunus serrulata :: Ornamental Cherry')">
 	    	<span class="dot" style="background-color:#e57373"></span>
 	    	Ornamental Cherry
 	    </button>
-	    <button class="filt" onclick="select('Corymbia ficifolia :: Red Flowering Gum')">
+	    <button class="filt" id="Corymbia ficifolia :: Red Flowering Gum" onclick="select('Corymbia ficifolia :: Red Flowering Gum')">
 	    	<span class="dot" style="background-color:#FF9800"></span>
 	    	Red Flowering Gum
 	    </button>
-	    <button class="filt" onclick="select('Lophostemon confertus :: Brisbane Box')">
+	    <button class="filt" id="Lophostemon confertus :: Brisbane Box" onclick="select('Lophostemon confertus :: Brisbane Box')">
 	    	<span class="dot" style="background-color:#2196F3"></span>
 	    	Brisbane Box
 	    </button>
@@ -298,6 +210,146 @@
 	</div>
 
 </div>
+
+<script>
+
+	var width = 750;
+	var height = 700;
+
+
+	mapboxgl.accessToken = 'pk.eyJ1Ijoidm9uZGV2IiwiYSI6ImNqZzM3MXJhYTc0eTcycW1zOGN0cTd0M3kifQ.11N4yDaypswyst8Kyj5J_g';
+	var map = new mapboxgl.Map({
+	container: 'map',
+	style: 'mapbox://styles/mapbox/dark-v9',
+	center: [-122.435297, 37.758972],
+	zoom: 11.65,
+	minZoom: 11.65
+	});
+
+ 	map.addControl(new mapboxgl.NavigationControl());
+
+	map.on('load', function() {
+		map.addSource('trees', {
+		type: 'geojson',
+		data: './treesnew.geojson'
+	});
+
+	map.addLayer({
+	  id: 'points',
+	  "interactive": false,
+	  // "filter": ["==", "Property Type", "Condominium"],
+	  type: 'circle',
+	  source: 'trees',
+	  paint: {
+	    // increase the radius of the circle as the zoom level and dbh value increases
+	    'circle-radius': {
+	      	'base': 1.6,
+            'stops': [[12, 2], [22, 80]]
+	    },
+
+	    "circle-color": 
+	      [
+	        'match',
+	        ['get', 'Species'],
+	        'Tristaniopsis laurina :: Swamp Myrtle', '#FFC107',
+	        'Arbutus Marina :: Hybrid Strawberry Tree', '#1976D2',
+	        'Magnolia grandiflora :: Southern Magnolia', '#F5F5F5',
+	        'Ginkgo biloba :: Maidenhair Tree', '#AFB42B',
+	        'Metrosideros excelsa :: New Zealand Xmas Tree', '#f44336',
+	        'Ligustrum lucidum :: Glossy Privet','#E64A19',
+			'Prunus cerasifera :: Cherry Plum','#FFEB3B',
+			'Eriobotrya deflexa :: Bronze Loquat','#FF9E80',
+			'Pyrus calleryana :: Ornamental Pear', '#C5E1A5',
+			'Olea europaea :: Olive Tree','#303F9F',
+			'Pittosporum undulatum :: Victorian Box','#E91E63',
+			'Ficus microcarpa nitida Green Gem :: Indian Laurel Fig Tree Green Gem','#00BCD4',
+			'Callistemon citrinus :: Lemon Bottlebrush','#FFF9C4',
+			'Acacia melanoxylon :: Blackwood Acacia','#7B1FA2',
+			'Maytenus boaria :: Mayten','#00796B',
+			'Ulmus parvifolia :: Chinese Elm','#d32f2f',
+			'Prunus serrulata :: Ornamental Cherry','#e57373',
+			'Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry', '#673AB7',
+			'Platanus x hispanica :: Sycamore: London Plane','#4CAF50',
+			'Lophostemon confertus :: Brisbane Box','#2196F3',
+			'Corymbia ficifolia :: Red Flowering Gum','#FF9800',
+	        /* other */ 'red'
+	      ],
+	  }
+
+	}, 'waterway-label');
+	});
+
+	/*var popup = new mapboxgl.Popup({
+    });
+
+	map.on('mouseenter', 'points', function(e) {
+        // Change the cursor style as a UI indicator.
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('click', 'points', function(e) {
+        var coordinates = e.features[0].geometry.coordinates.slice();
+
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        popup
+            .setLngLat(coordinates)
+            .setHTML("<span style='font-size:16px;align:center;color:#333'>"
+              +e.features[0].properties["Species"]+"</span>")
+            .addTo(map);
+  	});*/
+
+  	var selectedSpecies = [];
+
+  	function buildFilter(arr) {
+	  var filter = ['in', 'Species'];
+
+	  if (arr.length === 0) {
+	     return filter;
+	  }
+	  
+	  for(var i = 0; i < arr.length; i += 1) {
+	    filter.push(arr[i]);
+	  }
+	  
+	  return filter;
+	}
+
+	function select(species) {
+		if(selectedSpecies.indexOf(species) != -1) {
+			var ind = selectedSpecies.indexOf(species);
+			selectedSpecies.splice(ind, ind+1);
+		}
+		else {
+			selectedSpecies.push(species);
+		}
+	    document.getElementById(species).style.backgroundColor = "#aaa";
+	    var buttons = document.getElementsByClassName("filt");
+
+	    map.setFilter("points", buildFilter(selectedSpecies));
+
+		for (var i = 0, max = buttons.length; i < max; i++) {
+			if(!selectedSpecies.includes(buttons[i].id)) {	
+		    	buttons[i].style.backgroundColor = "#444";
+		    }
+		}
+  	};
+
+
+	function showAll() {
+		map.setFilter('points', ["all"]);
+	    var buttons = document.getElementsByClassName("filt");
+
+		for (var i = 0, max = buttons.length; i < max; i++) {
+			buttons[i].style.backgroundColor = "#444";
+		}
+
+		selectedSpecies = [];
+	}
+
+</script>
 
 </body>
 </html>
