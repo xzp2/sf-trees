@@ -74,22 +74,20 @@
 		background-color:#444;
 		border:none;
 		padding:8px;
-		margin-top:10px;
-		margin-bottom:20px;
+		margin:10px;
 		border-radius:5px;
 		font-size:12px;
 		font-family: 'Arimo';
 		color:#ddd;
 		display:inline-block;
-		width:45%;
+		width:100px;
 		height:34px;
-		color:#fff;
+		color:#eadb83;
 		background-color:#222;
-		border:1px solid #aaa;
 	}
 
 	.filt-all:hover {
-		background-color:#777;
+		text-decoration:underline;
 		pointer:cursor;
 	}
 
@@ -152,7 +150,7 @@
 
 <div class="header">
 	<span class="title">San Francisco: An Urban Forest</span>
-	This map shows the locations of the 20 most commonly found street trees in San Francisco. Click on a tree on the map to learn more about its species!
+	This map shows the locations of over 180,000 of the 20 most commonly found street trees in San Francisco. Click on a tree on the map to learn more about its species!
 	<span style="font-size:12px;display:block;padding-top:10px">All tree images and descriptions were taken from <a href="https://selectree.calpoly.edu/">SelecTree</a>.</span><br><br>
 
 	<div id="treeInfo" style="display:none">
@@ -164,6 +162,9 @@
 
 	<button class="filt-all" id="vb" onclick="showAll()">
 	    Show All Trees
+	</button><span style="font-size:25px;font-family:'Patua One';color:#fce4a4">|</span>
+	<button class="filt-all" id="vb" onclick="hideAll()">
+	    Hide All Trees
 	</button>
 
 	<div class="filters">
@@ -327,22 +328,6 @@
         map.getCanvas().style.cursor = 'pointer';
     });
 
-	/*var popup = new mapboxgl.Popup({
-    });
-    map.on('click', 'points', function(e) {
-        var coordinates = e.features[0].geometry.coordinates.slice();
-
-        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        }
-
-        popup
-            .setLngLat(coordinates)
-            .setHTML("<span style='font-size:16px;align:center;color:#333'>"
-              +e.features[0].properties["Species"]+"</span>")
-            .addTo(map);
-  	});*/
-
   	map.on('click', 'points', function(e) {
   		var coordinates = e.features[0].geometry.coordinates.slice();
 
@@ -351,7 +336,6 @@
         }
 
         showInfo(e.features[0].properties["Species"]);
-        console.log(e.features[0].properties["Species"]);
   	});
 
   	var selectedSpecies = [];
@@ -373,7 +357,7 @@
 	function select(species) {
 		if(selectedSpecies.indexOf(species) != -1) {
 			var ind = selectedSpecies.indexOf(species);
-			selectedSpecies.splice(ind, ind+1);
+			selectedSpecies.splice(ind, 1);
 		}
 		else {
 			selectedSpecies.push(species);
@@ -388,12 +372,6 @@
 		    	buttons[i].style.backgroundColor = "#444";
 		    }
 		}
-
-		/*if(selectedSpecies.length > 0) {
-			document.getElementById("treeInfo").style.display = "";
-			document.getElementById("treePic").innerHTML = "<img src='images/london_plane.jpg' style='max-width:100%; max-height:100%'>";
-			document.getElementById("treeText").innerHTML = "<b>"+species+"</b><br><br>Easily grown in average, medium to wet, well-drained soils in full sun. Tolerates light shade. Prefers rich, humusy, consistently moist soils. Generally tolerant of most urban pollutants."
-		}*/
   	};
 
   	var treeData = [
@@ -430,6 +408,17 @@
 
 	function showAll() {
 		map.setFilter('points', ["all"]);
+	    var buttons = document.getElementsByClassName("filt");
+
+		for (var i = 0, max = buttons.length; i < max; i++) {
+			buttons[i].style.backgroundColor = "#444";
+		}
+
+		selectedSpecies = [];
+	}
+
+	function hideAll() {
+		map.setFilter('points', ["all",["==", "Species", "hello"]]);
 	    var buttons = document.getElementsByClassName("filt");
 
 		for (var i = 0, max = buttons.length; i < max; i++) {
