@@ -23,7 +23,7 @@
 		background-color:#222;
 		font-family: 'Arimo';
 		color:#ddd;
-		font-size:15px;
+		font-size:14px;
 	}
 	.header {
 		left:60%;
@@ -35,10 +35,9 @@
 	.title {
 		width:100%;
 		font-family: 'Patua One', cursive;
-		color:#aaa;
+		color:#c1e5bc;
 		font-size:30px;
 		display:block;
-		padding-bottom:10px;
 	}
 	.button {
 		background-color:#444;
@@ -75,7 +74,8 @@
 		background-color:#444;
 		border:none;
 		padding:8px;
-		margin:20px;
+		margin-top:10px;
+		margin-bottom:20px;
 		border-radius:5px;
 		font-size:12px;
 		font-family: 'Arimo';
@@ -108,6 +108,40 @@
 	  margin-top:1px;
 	  margin-left:10px;
 	}
+
+	#treeInfo {
+		padding:10px;
+		height:160px;
+		border:1px solid #555;
+		overflow:auto;
+	}
+	#treePic {
+		height:155px;
+		float:left;
+		/*border:1px solid #777;*/
+		margin-right:5px;
+	}
+	#treeText {
+		margin-top:5px;
+	}
+
+	a {
+		/*text-decoration:none;*/
+		color:#dbf7b2;
+	}
+
+	#close {
+	    float:right;
+	    display:inline-block;
+	    padding:2px 5px;
+	    background:#aaa;
+	    color:#fff;
+
+	}
+	#close:hover {
+		cursor:pointer;
+		background:#777;
+	}
 	
 </style>
 </head>
@@ -118,7 +152,16 @@
 
 <div class="header">
 	<span class="title">San Francisco: An Urban Forest</span>
-	This map shows the locations of the 20 most commonly found street trees in San Francisco, as well as information about each species.<br>
+	This map shows the locations of the 20 most commonly found street trees in San Francisco. Click on a tree on the map to learn more about its species!
+	<span style="font-size:12px;display:block;padding-top:10px">All tree images and descriptions were taken from <a href="https://selectree.calpoly.edu/">SelecTree</a>.</span><br><br>
+
+	<div id="treeInfo" style="display:none">
+		<span id='close' onclick="this.parentNode.style.display = 'none'">x</span>
+
+		<div id="treePic"></div>
+		<div id="treeText"></div>
+	</div>
+
 	<button class="filt-all" id="vb" onclick="showAll()">
 	    Show All Trees
 	</button>
@@ -236,15 +279,15 @@
 
 	map.addLayer({
 	  id: 'points',
-	  "interactive": false,
+	  "interactive": true,
 	  // "filter": ["==", "Property Type", "Condominium"],
 	  type: 'circle',
 	  source: 'trees',
 	  paint: {
 	    // increase the radius of the circle as the zoom level and dbh value increases
 	    'circle-radius': {
-	      	'base': 1.6,
-            'stops': [[12, 2], [22, 80]]
+	      	'base': 1.5,
+            'stops': [[12, 2], [22, 100]]
 	    },
 
 	    "circle-color": 
@@ -256,7 +299,6 @@
 	        'Magnolia grandiflora :: Southern Magnolia', '#F5F5F5',
 	        'Ginkgo biloba :: Maidenhair Tree', '#AFB42B',
 	        'Metrosideros excelsa :: New Zealand Xmas Tree', '#f44336',
-	        'Ligustrum lucidum :: Glossy Privet','#E64A19',
 			'Prunus cerasifera :: Cherry Plum','#FFEB3B',
 			'Eriobotrya deflexa :: Bronze Loquat','#FF9E80',
 			'Pyrus calleryana :: Ornamental Pear', '#C5E1A5',
@@ -279,14 +321,14 @@
 	}, 'waterway-label');
 	});
 
-	/*var popup = new mapboxgl.Popup({
-    });
 
 	map.on('mouseenter', 'points', function(e) {
         // Change the cursor style as a UI indicator.
         map.getCanvas().style.cursor = 'pointer';
     });
 
+	/*var popup = new mapboxgl.Popup({
+    });
     map.on('click', 'points', function(e) {
         var coordinates = e.features[0].geometry.coordinates.slice();
 
@@ -300,6 +342,17 @@
               +e.features[0].properties["Species"]+"</span>")
             .addTo(map);
   	});*/
+
+  	map.on('click', 'points', function(e) {
+  		var coordinates = e.features[0].geometry.coordinates.slice();
+
+        while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+            coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+        }
+
+        showInfo(e.features[0].properties["Species"]);
+        console.log(e.features[0].properties["Species"]);
+  	});
 
   	var selectedSpecies = [];
 
@@ -335,8 +388,45 @@
 		    	buttons[i].style.backgroundColor = "#444";
 		    }
 		}
+
+		/*if(selectedSpecies.length > 0) {
+			document.getElementById("treeInfo").style.display = "";
+			document.getElementById("treePic").innerHTML = "<img src='images/london_plane.jpg' style='max-width:100%; max-height:100%'>";
+			document.getElementById("treeText").innerHTML = "<b>"+species+"</b><br><br>Easily grown in average, medium to wet, well-drained soils in full sun. Tolerates light shade. Prefers rich, humusy, consistently moist soils. Generally tolerant of most urban pollutants."
+		}*/
   	};
 
+  	var treeData = [
+  		{'name':"Platanus x hispanica :: Sycamore: London Plane", 'image': "images/london_plane.jpg", 'desc': "A tough, durable tree; can tolerate severe pruning and smog. Native to Spain. Erect or Spreading and requires ample growing space. Flowers Inconspicuous. Flowers in Spring or Winter. Has separate male and female flowers on the same tree (monoecious).", 'link': 'https://selectree.calpoly.edu/tree-detail/platanus-%C3%97-hispanica'},
+  		{'name':'Tristaniopsis laurina :: Swamp Myrtle', 'image':"images/swamp_myrtle.jpg", 'desc': "Can be trained as a multi-trunked tree. New growth is red. Slow growing tree, so planting a larger specimen is desirable. Has fragrant Leaf. Native to Australia. Flowers Showy, yellow. Flowers in Spring or Summer. Has perfect flowers (male and female parts in each flower).", 'link': 'https://selectree.calpoly.edu/tree-detail/tristaniopsis-laurina-elegant'},
+  		{'name':'Arbutus Marina :: Hybrid Strawberry Tree', 'image':'images/strawberry.jpg', 'desc':'Resistant to oak root fungus. Low water needs. Flowers Showy. Pink or Rose. Flowers in Fall, Winter, Spring or Summer. Has perfect flowers (male and female parts in each flower).', 'link':'https://selectree.calpoly.edu/tree-detail/arbutus-marina'},
+  		{'name':'Magnolia grandiflora :: Southern Magnolia', 'image':'images/magnolia.jpg', 'desc':'Branches don\'t droop and resist breakage. Has fragrant Flower. Evergreen. Flowers Showy. Fragrant White. Flowers in Spring or Summer. Has perfect flowers (male and female parts in each flower).', 'link': 'https://selectree.calpoly.edu/tree-detail/magnolia-grandiflora-brackens-brown-beauty'},
+  		{'name':'Ginkgo biloba :: Maidenhair Tree', 'image':'images/maidenhair.jpg', 'desc': 'Resistant to oak root fungus. Smog tolerant. Female tree has fruit with obnoxious odor. Plant male trees to avoid fruit. Can grow to 100 feet in the right conditions but commonly shorter. Has Unpleasant Fruit fragrance. Native to China. Trees may be referred to as male or female.', 'link':'https://selectree.calpoly.edu/tree-detail/ginkgo-biloba'},
+  		{'name':'Metrosideros excelsa :: New Zealand Xmas Tree', 'image':'images/pohutukawa.jpg', 'desc':'Drought resistant and smog tolerant. Forms areal roots that descend to the ground and take root. These can become extra trunks that provide additional support. Resistant to salt spray. A good coastal tree. Can grow taller if conditions a right. Native to New Zealand.', 'link':'https://selectree.calpoly.edu/tree-detail/metrosideros-excelsa'},
+  		{'name':'Prunus cerasifera :: Cherry Plum', 'image':'images/cherry_plum.jpg', 'desc': 'Small deciduous tree. Cultivated by cuttings or seed. Not suited to compacted soil. Cal-IPC (California Invasive Plant Council) classifies the invasiveness of the species of this plant as limited. Has fragrant Flower. Native to Asia. Longevity Less than 50 years.', 'link':'https://selectree.calpoly.edu/tree-detail/prunus-cerasifera'},
+  		{'name':'Eriobotrya deflexa :: Bronze Loquat', 'image':'images/bronze_loquat.jpg', 'desc': 'Its shiny bronzy green new foliage with reddish highlights is quite attractive, and it rarely sets fruit. Large panicles of deep pink flowers are showy in the spring. It is not drought tolerant. Native to Taiwan and Southern Vietnam.', 'link':'https://selectree.calpoly.edu/tree-detail/eriobotrya-deflexa'},
+  		{'name':'Pyrus calleryana :: Ornamental Pear', 'image':'images/pear.jpg', 'desc': 'Fairly resistant to fireblight. Has fragrant Flower. Native to China. Flowers Showy. Fragrant White. Flowers in Spring or Winter. Has perfect flowers (male and female parts in each flower). Longevity 50 to 150 years.', 'link':'https://selectree.calpoly.edu/tree-detail/pyrus-calleryana'},
+  		{'name':'Olea europaea :: Olive Tree', 'image':'images/olive.jpg', 'desc': 'Native to the Mediterranean region, it does best in fertile deep soil, but also tolerates rocky or alkaline soils. It does well in heat and tolerates moderate short-term dryness. Has fragrant Flower. Native to Mediterranean region.', 'link':'https://selectree.calpoly.edu/tree-detail/olea-europaea'},
+  		{'name':'Pittosporum undulatum :: Victorian Box', 'image':'images/victorian.jpg', 'desc': 'Fairly drought resistant. Cal-IPC (California Invasive Plant Council) classifies the invasiveness of this plant as small and more problematic or north coast. Has fragrant Flower. Native to Australia. Has Evergreen foliage.', 'link':'https://selectree.calpoly.edu/tree-detail/pittosporum-undulatum'},
+  		{'name':'Ficus microcarpa nitida Green Gem :: Indian Laurel Fig Tree Green Gem', 'image':'images/green_gem.jpg', 'desc':'Resistant to thrips. Flowers Inconspicuous. Flowers in Winter. Has separate male and female flowers on the same tree (monoecious). Leaves Oval, Glossy Dark Green, No Change, Evergreen.', 'link':'https://selectree.calpoly.edu/tree-detail/ficus-microcarpa-green-gem'},
+  		{'name':'Callistemon citrinus :: Lemon Bottlebrush', 'image':'images/bottlebrush.jpg', 'desc': 'Lemon Bottlebrush is commonly grown as a shrub, or as a single trunk tree standard. It is a tough, reliable evergreen species, attractive by nature of its red brushlike flower plumes, though it is considered quite common and not especially exciting otherwise. It is especially attractive to hummingbirds.', 'link':'https://selectree.calpoly.edu/tree-detail/callistemon-citrinus'},
+  		{'name':'Acacia melanoxylon :: Blackwood Acacia', 'image':'images/acacia.jpg', 'desc': 'Grows best in light, well-drained, fertile soil. A timber species in Australia. Native to Eastern Australia. Flowers Showy. Cream or White. Flowers in Spring or Winter. Has perfect flowers (male and female parts in each flower).', 'link':'https://selectree.calpoly.edu/tree-detail/acacia-melanoxylon'},	
+  		{'name':'Maytenus boaria :: Mayten', 'image':'images/mayten.jpg', 'desc': 'Resistant to oak root fungus. Takes some drought. Must have good drainage. Cal-IPC (California Invasive Plant Council) classifies this plant as invasive, with a note of infestation on Angel Island, San Francisco Bay. Native to Chile.', 'link':'https://selectree.calpoly.edu/tree-detail/maytenus-boaria'},	
+  		{'name':'Ulmus parvifolia :: Chinese Elm', 'image':'images/chinese_elm.jpg', 'desc': 'Susceptible to Texas root rot in desert. Has same problems as other elms but not as extensively. Susceptible to Dutch Elm Disease, but relatively few pests and diseases compared to other elms. Native to China, Japan, North Korea, and Vietnam.', 'link':'https://selectree.calpoly.edu/tree-detail/ulmus-parvifolia'},	
+  		{'name':'Prunus serrulata :: Ornamental Cherry', 'image':'images/cherry.jpg', 'desc': 'Utility friendly tree. Needs good drainage. On clay soils, plant on slopes or in raised beds. Has fragrant Flower. Susceptible to Caterpillars, Canker, Crown Rot, Oak Root Rot, Phytophthora, Root Rot, Rust and Verticillium.', 'link':'https://selectree.calpoly.edu/tree-detail/prunus-serrulata'},	
+  		{'name':'Prunus serrulata Kwanzan :: Kwanzan Flowering Cherry', 'image':'images/kwanzan.jpg', 'desc': 'Needs good drainage. On clay soils, plant on slopes or in raised beds. Has fragrant Flower. Flowers Showy. Fragrant Pink or Rose. Flowers in Spring. Has perfect flowers (male and female parts in each flower).', 'link':'https://selectree.calpoly.edu/tree-detail/prunus-kwanzan'},	
+  		{'name':'Lophostemon confertus :: Brisbane Box', 'image':'images/brisbane.jpg', 'desc': 'Drought resistant once established. Smog tolerant. May be a larger tree in warmer areas. Native to Australia. Susceptible to Scales, Phytophthora and Root Rot. Flowers Showy. White. Flowers in Spring. Has perfect flowers (male and female parts in each flower).', 'link':'https://selectree.calpoly.edu/tree-detail/lophostemon-confertus'},	
+  		{'name':'Corymbia ficifolia :: Red Flowering Gum', 'image':'images/red_gum.jpg', 'desc': 'It prefers temperate coastal conditions, where it tolerates dryness and salt spray. It is drought and smog tolerant. Hardiness estimate : 25-30 degrees F. Leaves have no dot glands when held up to the light (see photo). Has fragrant Leaf. Native to Western Australia.', 'link':'https://selectree.calpoly.edu/tree-detail/lophostemon-confertus'},	
+  	];
+
+  	function showInfo(species) {
+  		var tree = treeData.filter(function(x) {
+  			return x.name == species;
+  		})[0];
+  		document.getElementById("treeInfo").style.display = "";
+		document.getElementById("treePic").innerHTML = "<img src=" + tree.image +" style='max-width:100%; max-height:100%'>";
+		document.getElementById("treeText").innerHTML = "<b>"+species+"</b><br><br>"+ tree.desc + "<br><br><a href='" + tree.link + "'>Read More</a>";
+	}
 
 	function showAll() {
 		map.setFilter('points', ["all"]);
